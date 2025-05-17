@@ -15,5 +15,6 @@ Rails.application.routes.draw do
     get 'update/:id', to: 'products#update', as: :products_update
     patch 'update_action/:id', to: 'products#update_action', as: :products_update_action
     post 'export_action', to: 'products#export_action', as: :products_export_action
+    delete 'delete_action/:id', to: 'products#delete_action', as: :products_delete_action
   end
 end

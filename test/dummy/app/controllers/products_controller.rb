@@ -77,6 +77,20 @@ class ProductsController < ApplicationController
     end
   end
 
+  def delete_action
+    @product = Product.find(params[:id])
+
+    respond_to do |format|
+      if @product.destroy
+        format.html { redirect_to main_app.products_path, notice: 'Product deleted successfully' }
+        format.json { render json: @product }
+      else
+        format.html { render :index, status: :unprocessable_entity }
+        format.json { render json: @product.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
 
   def product_params
