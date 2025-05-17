@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Lato
+module LatoStorage
   class ApplicationControllerTest < ActionDispatch::IntegrationTest
     setup do
       Rails.cache.clear
