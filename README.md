@@ -1,8 +1,6 @@
 # Lato Storage
 Manage application storage (ActiveStorage data) on Lato projects.
 
-🚨 THIS GEM IN UNDER DEVELOPMENT 🚨
-
 NOTE: This gem is using [Active Storage Dashboard](https://github.com/giovapanasiti/active_storage_dashboard) as reference for the interface and the functionality. The idea is to provide a similar interface inside Lato.
 
 ## Installation
