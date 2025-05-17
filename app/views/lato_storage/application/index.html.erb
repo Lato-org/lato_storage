@@ -1,0 +1,134 @@
+<%= lato_page_head I18n.t('lato_storage.storage') %>
+
+<div class="row">
+  <div class="col col-6 col-lg-3 mb-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="fw-bold fs-2"><%= @blobs_count %></div>
+        <div><%= I18n.t('lato_storage.total_blobs') %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col col-6 col-lg-3 mb-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="fw-bold fs-2"><%= @attachments_count %></div>
+        <div><%= I18n.t('lato_storage.total_attachments') %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col col-6 col-lg-3 mb-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="fw-bold fs-2"><%= @variant_records_count %></div>
+        <div><%= I18n.t('lato_storage.total_variant_records') %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col col-6 col-lg-3 mb-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="fw-bold fs-2"><%= @deletable_blobs_count %></div>
+        <div><%= I18n.t('lato_storage.deletable_blobs') %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col col-12 col-lg-6 mb-3">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <%= I18n.t('lato_storage.content_type_distribution') %>
+        </h5>
+      </div>
+      <div class="card-body">
+        <% if @content_types.any? %>
+          <% total = @content_types.sum { |_, count| count } %>
+          <ul class="list-group list-group-flush">
+            <% @content_types.each do |content_type, count| %>
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong><%= content_type %></strong>
+                  <span class="badge bg-primary rounded-pill">
+                    <%= count %> files
+                  </span>
+                </div>
+
+                <div class="progress mt-2">
+                  <div class="progress-bar" role="progressbar" style="width: <%= (count.to_f / total * 100).round(2) %>%" aria-valuenow="<%= count %>" aria-valuemin="0" aria-valuemax="<%= total %>"></div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <div class="alert alert-info mb-0">
+            <%= I18n.t('lato_storage.no_content_types') %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col col-12 col-lg-6 mb-3">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <%= I18n.t('lato_storage.storage_usage') %>
+        </h5>
+      </div>
+      <div class="card-body row">
+        <div class="col col-12 col-md-6 mb-3 mb-md-0">
+          <div class="card">
+            <div class="card-body text-center">
+              <div class="fw-bold fs-2"><%= format_bytes @total_storage %></div>
+              <div><%= I18n.t('lato_storage.total_storage') %></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col col-12 col-md-6 mb-3 mb-md-0">
+          <div class="card">
+            <div class="card-body text-center">
+              <div class="fw-bold fs-2"><%= format_bytes @avg_storage %></div>
+              <div><%= I18n.t('lato_storage.avg_storage') %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <%= I18n.t('lato_storage.largest_blobs') %>
+        </h5>
+      </div>
+      <div class="card-body">
+        <% if @largest_blobs.any? %>
+          <div class="list-group list-group-flush">
+            <% @largest_blobs.each do |blob| %>
+              <a class="list-group-item list-group-item-action" href="<%= main_app.url_for(blob) %>" target="_blank" rel="noopener noreferrer" download>
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong><%= blob.filename %></strong>
+                  <div class="d-flex align-items-center">
+                    <span class="badge bg-primary rounded-pill">
+                      <%= format_bytes blob.byte_size %>
+                    </span>
+                    <i class="bi bi-download ms-2"></i>
+                  </div>
+                </div>
+              </a>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="alert alert-info mb-0">
+            <%= I18n.t('lato_storage.no_largest_blobs') %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,3 +1,14 @@
 it:
   lato_storage:
-    
+    storage: "Storage"
+    total_blobs: "Blob totali"
+    total_attachments: "Allegati totali"
+    total_variant_records: "Varianti totali"
+    total_storage: "Storage totale"
+    avg_storage: "Storage per Blob"
+    content_type_distribution: "Distribuzione dei contenuti"
+    no_content_types: "Nessun tipo di contenuto disponibile"
+    storage_usage: "Utilizzo dello storage"
+    largest_blobs: "Blob più grandi"
+    no_largest_blobs: "Nessun blob disponibile"
+    deletable_blobs: "Blob eliminabili"

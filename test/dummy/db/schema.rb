@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_03_28_073205) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_17_115545) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -113,6 +113,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_28_073205) do
     t.index ["email"], name: "index_lato_users_on_email", unique: true
   end
 
+  create_table "products", force: :cascade do |t|
+    t.string "code"
+    t.integer "status"
+    t.integer "lato_user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lato_user_id"], name: "index_products_on_lato_user_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "lato_invitations", "lato_users"
@@ -120,4 +129,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_03_28_073205) do
   add_foreign_key "lato_log_user_signins", "lato_users"
   add_foreign_key "lato_log_user_signups", "lato_users"
   add_foreign_key "lato_operations", "lato_users"
+  add_foreign_key "products", "lato_users"
 end

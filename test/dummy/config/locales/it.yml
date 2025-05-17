@@ -1,0 +1,16 @@
+it:
+  activerecord:
+    attributes:
+      product:
+        code: Codice
+        status: Stato
+        created_at: Data creazione
+        lato_user_id: Utente
+        updated_at: Data modifica
+        lifetime: Tempo di vita
+        actions: Azioni
+      product/status:
+        created: Creato
+        in_progress: In lavorazione
+        completed: Completato
+        cancelled: Cancellato
