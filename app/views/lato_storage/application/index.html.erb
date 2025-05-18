@@ -84,7 +84,7 @@
         </h5>
 
         <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-          <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary', data: { turbo_method: :post, turbo_confirm: I18n.t('lato_storage.confirm_free_space'), lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
+          <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary', data: { turbo_method: :post, lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
         </div>
       </div>
       <div class="card-body row">
