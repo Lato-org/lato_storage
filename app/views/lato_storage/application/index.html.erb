@@ -37,6 +37,10 @@
     </div>
   </div>
 
+</div>
+
+<div class="row">
+
   <div class="col col-12 col-lg-6 mb-3">
     <div class="card">
       <div class="card-header">
@@ -74,10 +78,14 @@
 
   <div class="col col-12 col-lg-6 mb-3">
     <div class="card mb-3">
-      <div class="card-header">
+      <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">
           <%= I18n.t('lato_storage.storage_usage') %>
         </h5>
+
+        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+          <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary', data: { turbo_method: :post, turbo_confirm: I18n.t('lato_storage.confirm_free_space'), lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
+        </div>
       </div>
       <div class="card-body row">
         <div class="col col-12 col-md-6 mb-3 mb-md-0">
@@ -131,4 +139,5 @@
       </div>
     </div>
   </div>
+
 </div>

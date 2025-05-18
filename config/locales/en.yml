@@ -12,3 +12,5 @@ en:
     largest_blobs: "Largest Blobs"
     no_largest_blobs: "No Blobs available"
     deletable_blobs: "Deletable Blobs"
+    cta_free_space: "Free up space"
+    confirm_free_space: "Are you sure you want to free up space? The blobs considered deletable will be removed permanently."

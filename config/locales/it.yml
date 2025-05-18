@@ -12,3 +12,5 @@ it:
     largest_blobs: "Blob più grandi"
     no_largest_blobs: "Nessun blob disponibile"
     deletable_blobs: "Blob eliminabili"
+    cta_free_space: "Libera spazio"
+    confirm_free_space: "Sei sicuro di voler liberare spazio? I file considerati eliminabili verranno rimossi definitivamente."

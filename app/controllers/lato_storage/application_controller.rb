@@ -19,6 +19,20 @@ module LatoStorage
       @largest_blobs = ActiveStorage::Blob.order(byte_size: :desc).limit(3)
     end
 
+    def cleaner
+      @operation = Lato::Operation.generate('Lato::ActiveStorageCleanerJob', {}, @session.user_id)
+
+      respond_to do |format|
+        if @operation.start
+          format.html { redirect_to lato.operation_path(@operation) }
+          format.json { render json: @operation }
+        else
+          format.html { render :index, status: :unprocessable_entity }
+          format.json { render json: @operation.errors, status: :unprocessable_entity }
+        end
+      end
+    end
+
     protected
 
     def authenticate_lato_storage_admin
