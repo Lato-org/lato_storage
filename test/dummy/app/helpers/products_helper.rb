@@ -15,6 +15,12 @@ module ProductsHelper
     Time.at(product.lifetime).utc.strftime('%H h %M m')
   end
 
+  def product_file(product)
+    return unless product.file.attached?
+
+    image_tag(product.file.variant(:small), class: 'img-thumbnail', alt: product.file.filename)
+  end
+
   def product_actions(product)
     content_tag(:div, class: 'btn-group btn-group-sm') do
       concat link_to('Edit', products_update_path(product), class: 'btn btn-primary', data: { lato_action_target: 'trigger', turbo_frame: dom_id(product, 'form') })

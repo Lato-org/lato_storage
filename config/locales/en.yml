@@ -14,3 +14,6 @@ en:
     deletable_blobs: "Deletable Blobs"
     cta_free_space: "Free up space"
     cta_see_all: "See all"
+    blobs: "Blobs"
+    attachments: "Attachments"
+    variant_records: "Variant Records"

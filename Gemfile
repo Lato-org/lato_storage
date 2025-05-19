@@ -20,6 +20,7 @@ gem 'stimulus-rails'
 gem 'sassc-rails'
 gem 'bootstrap'
 gem 'lato'
+gem "image_processing", "~> 1.2"
 
 # Testing dependencies
 gem "rails-erd"

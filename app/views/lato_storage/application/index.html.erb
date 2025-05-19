@@ -6,7 +6,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @blobs_count %></div>
         <div><%= I18n.t('lato_storage.total_blobs') %></div>
-        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.blobs_path, class: 'btn btn-primary btn-sm mt-3' %>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.blobs_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_blob', action_size: 'xl', action_title: I18n.t('lato_storage.blobs') } %>
       </div>
     </div>
   </div>
@@ -16,7 +16,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @attachments_count %></div>
         <div><%= I18n.t('lato_storage.total_attachments') %></div>
-        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.attachments_path, class: 'btn btn-primary btn-sm mt-3' %>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.attachments_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_attachment', action_size: 'xl', action_title: I18n.t('lato_storage.attachments') } %>
       </div>
     </div>
   </div>
@@ -26,8 +26,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @variant_records_count %></div>
         <div><%= I18n.t('lato_storage.total_variant_records') %></div>
-        <button class="btn btn-primary btn-sm mt-3" disabled>
-          <%= I18n.t('lato_storage.cta_see_all') %>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.variant_records_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_variant_record', action_size: 'xl', action_title: I18n.t('lato_storage.variant_records') } %>
       </div>
     </div>
   </div>

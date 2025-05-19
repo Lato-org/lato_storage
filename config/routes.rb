@@ -4,4 +4,5 @@ LatoStorage::Engine.routes.draw do
 
   resources :blobs, only: [:index]
   resources :attachments, only: [:index]
+  resources :variant_records, only: [:index]
 end

@@ -13,7 +13,9 @@ class Product < ApplicationRecord
 
   belongs_to :lato_user, class_name: 'Lato::User'
 
-  has_one_attached :file
+  has_one_attached :file do |attachable|
+    attachable.variant :small, resize_to_limit: [50, 50]
+  end
 
   # Scopes
   ##

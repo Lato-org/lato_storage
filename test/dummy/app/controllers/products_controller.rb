@@ -3,7 +3,7 @@ class ProductsController < ApplicationController
   before_action { active_sidebar(:products) }
 
   def index
-    columns = %i[id code status lato_user_id created_at actions]
+    columns = %i[id code status lato_user_id created_at file actions]
     sortable_columns = %i[id code status lato_user_id]
     searchable_columns = %i[id code lato_user_id]
 

@@ -37,5 +37,9 @@ module LatoStorage
       link_to attachment.blob.filename, main_app.url_for(attachment.blob), target: '_blank', class: 'text-truncate d-block', style: 'max-width: 250px;'
     end
 
+    def active_storage_variant_record_blob_id(variant_record)
+      return  ' - ' if variant_record.blob.nil?
+      link_to variant_record.blob.filename, main_app.url_for(variant_record.blob), target: '_blank', class: 'text-truncate d-block', style: 'max-width: 250px;'
+    end
   end
 end
