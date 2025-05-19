@@ -6,6 +6,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @blobs_count %></div>
         <div><%= I18n.t('lato_storage.total_blobs') %></div>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.blobs_path, class: 'btn btn-primary btn-sm mt-3' %>
       </div>
     </div>
   </div>
@@ -15,6 +16,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @attachments_count %></div>
         <div><%= I18n.t('lato_storage.total_attachments') %></div>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.attachments_path, class: 'btn btn-primary btn-sm mt-3' %>
       </div>
     </div>
   </div>
@@ -24,6 +26,8 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @variant_records_count %></div>
         <div><%= I18n.t('lato_storage.total_variant_records') %></div>
+        <button class="btn btn-primary btn-sm mt-3" disabled>
+          <%= I18n.t('lato_storage.cta_see_all') %>
       </div>
     </div>
   </div>
@@ -33,6 +37,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @deletable_blobs_count %></div>
         <div><%= I18n.t('lato_storage.deletable_blobs') %></div>
+        <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary btn-sm mt-3', data: { turbo_method: :post, lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
       </div>
     </div>
   </div>
@@ -82,10 +87,6 @@
         <h5 class="card-title mb-0">
           <%= I18n.t('lato_storage.storage_usage') %>
         </h5>
-
-        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-          <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary', data: { turbo_method: :post, lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
-        </div>
       </div>
       <div class="card-body row">
         <div class="col col-12 col-md-6 mb-3 mb-md-0">

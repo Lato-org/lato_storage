@@ -13,3 +13,4 @@ it:
     no_largest_blobs: "Nessun blob disponibile"
     deletable_blobs: "Blob eliminabili"
     cta_free_space: "Libera spazio"
+    cta_see_all: "Vedi tutti"

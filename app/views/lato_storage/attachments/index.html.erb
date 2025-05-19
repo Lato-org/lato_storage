@@ -1,0 +1,9 @@
+<%= lato_page_head 'Attachments', [
+  { label: 'Storage', path: lato_storage.root_path },
+] %>
+
+<div class="card">
+  <div class="card-body">
+    <%= lato_index @attachments %>
+  </div>
+</div>
