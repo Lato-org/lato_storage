@@ -130,7 +130,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    lato (3.13.18)
+    lato (3.13.19)
       bcrypt
       bootstrap
       browser
