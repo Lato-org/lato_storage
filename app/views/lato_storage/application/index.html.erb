@@ -1,10 +1,16 @@
 <%= lato_page_head I18n.t('lato_storage.storage') %>
 
+<% if LatoStorage.config.optimize_performances %>
+  <div class="alert alert-info mb-3">
+    <%= I18n.t('lato_storage.optimize_performances_active') %>
+  </div>
+<% end %>
+
 <div class="row">
   <div class="col col-6 col-lg-3 mb-3">
     <div class="card">
       <div class="card-body text-center">
-        <div class="fw-bold fs-2"><%= @blobs_count %></div>
+        <div class="fw-bold fs-2"><%= @data[:blobs_count] %></div>
         <div><%= I18n.t('lato_storage.total_blobs') %></div>
         <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.blobs_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_blob', action_size: 'xl', action_title: I18n.t('lato_storage.blobs') } %>
       </div>
@@ -14,7 +20,7 @@
   <div class="col col-6 col-lg-3 mb-3">
     <div class="card">
       <div class="card-body text-center">
-        <div class="fw-bold fs-2"><%= @attachments_count %></div>
+        <div class="fw-bold fs-2"><%= @data[:attachments_count] %></div>
         <div><%= I18n.t('lato_storage.total_attachments') %></div>
         <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.attachments_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_attachment', action_size: 'xl', action_title: I18n.t('lato_storage.attachments') } %>
       </div>
@@ -24,7 +30,7 @@
   <div class="col col-6 col-lg-3 mb-3">
     <div class="card">
       <div class="card-body text-center">
-        <div class="fw-bold fs-2"><%= @variant_records_count %></div>
+        <div class="fw-bold fs-2"><%= @data[:variant_records_count] %></div>
         <div><%= I18n.t('lato_storage.total_variant_records') %></div>
         <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.variant_records_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_variant_record', action_size: 'xl', action_title: I18n.t('lato_storage.variant_records') } %>
       </div>
@@ -34,7 +40,7 @@
   <div class="col col-6 col-lg-3 mb-3">
     <div class="card">
       <div class="card-body text-center">
-        <div class="fw-bold fs-2"><%= @deletable_blobs_count %></div>
+        <div class="fw-bold fs-2"><%= @data[:deletable_blobs_count] %></div>
         <div><%= I18n.t('lato_storage.deletable_blobs') %></div>
         <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary btn-sm mt-3', data: { turbo_method: :post, lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
       </div>
@@ -53,10 +59,10 @@
         </h5>
       </div>
       <div class="card-body">
-        <% if @content_types.any? %>
-          <% total = @content_types.sum { |_, count| count } %>
+        <% if @data[:content_types].any? %>
+          <% total = @data[:content_types].sum { |_, count| count } %>
           <ul class="list-group list-group-flush">
-            <% @content_types.each do |content_type, count| %>
+            <% @data[:content_types].each do |content_type, count| %>
               <li class="list-group-item">
                 <div class="d-flex justify-content-between align-items-center">
                   <strong><%= content_type %></strong>
@@ -91,7 +97,7 @@
         <div class="col col-12 col-md-6 mb-3 mb-md-0">
           <div class="card">
             <div class="card-body text-center">
-              <div class="fw-bold fs-2"><%= format_bytes @total_storage %></div>
+              <div class="fw-bold fs-2"><%= format_bytes @data[:total_storage] %></div>
               <div><%= I18n.t('lato_storage.total_storage') %></div>
             </div>
           </div>
@@ -100,7 +106,7 @@
         <div class="col col-12 col-md-6 mb-3 mb-md-0">
           <div class="card">
             <div class="card-body text-center">
-              <div class="fw-bold fs-2"><%= format_bytes @avg_storage %></div>
+              <div class="fw-bold fs-2"><%= format_bytes @data[:avg_storage] %></div>
               <div><%= I18n.t('lato_storage.avg_storage') %></div>
             </div>
           </div>
@@ -115,15 +121,15 @@
         </h5>
       </div>
       <div class="card-body">
-        <% if @largest_blobs.any? %>
+        <% if @data[:largest_blobs].any? %>
           <div class="list-group list-group-flush">
-            <% @largest_blobs.each do |blob| %>
-              <a class="list-group-item list-group-item-action" href="<%= main_app.url_for(blob) %>" target="_blank" rel="noopener noreferrer" download>
+            <% @data[:largest_blobs].each do |blob| %>
+              <a class="list-group-item list-group-item-action" href="<%= blob[:url] %>" target="_blank" rel="noopener noreferrer" download>
                 <div class="d-flex justify-content-between align-items-center">
-                  <strong class="text-truncate"><%= blob.filename %></strong>
+                  <strong class="text-truncate"><%= blob[:filename] %></strong>
                   <div class="d-flex align-items-center ms-3">
                     <span class="badge bg-primary rounded-pill">
-                      <%= format_bytes blob.byte_size %>
+                      <%= format_bytes blob[:byte_size] %>
                     </span>
                     <i class="bi bi-download ms-2"></i>
                   </div>

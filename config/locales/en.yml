@@ -17,3 +17,4 @@ en:
     blobs: "Blobs"
     attachments: "Attachments"
     variant_records: "Variant Records"
+    optimize_performances_active: "The displayed data is cached to optimize performance. The shown values are therefore not updated in real-time and may not reflect the most recent changes."

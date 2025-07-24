@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lato_storage (3.0.4)
+    lato_storage (3.0.6)
       lato
       rails (>= 7.1.1)
 
@@ -130,7 +130,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    lato (3.13.17)
+    lato (3.13.18)
       bcrypt
       bootstrap
       browser
