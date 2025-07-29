@@ -32,15 +32,9 @@ module LatoStorage
       attachments_count = ActiveStorage::Attachment.count
       variant_records_count = defined?(ActiveStorage::VariantRecord) ? ActiveStorage::VariantRecord.count : 0
       # deletable_blobs_count = ActiveStorage::Blob.unattached.where('active_storage_blobs.created_at < ?', 12.hours.ago).count
-      deletable_blobs_count = ActiveRecord::Base.connection.execute(
-        <<~SQL
-          SELECT COUNT(*)
-          FROM active_storage_blobs asb
-          LEFT JOIN active_storage_attachments asa ON asa.blob_id = asb.id
-          WHERE asa.blob_id IS NULL 
-          AND asb.created_at < '#{12.hours.ago.to_formatted_s(:db)}'
-        SQL
-      ).first['count'].to_i
+      deletable_blobs_count = ActiveStorage::Blob.joins("LEFT JOIN active_storage_attachments ON aquctive_storage_attachments.blob_id = active_storage_blobs.id")
+                                                 .where("active_storage_attachments.blob_id IS NULL")
+                                                 .where("active_storage_blobs.created_at < ?", 12.hours.ago).count
       total_storage = ActiveStorage::Blob.sum(:byte_size)
       avg_storage = blobs_count.positive? ? total_storage / blobs_count : 0
       content_types = ActiveStorage::Blob.group(:content_type).count.sort_by { |_, count| -count }.first(5)
