@@ -31,10 +31,7 @@ module LatoStorage
       blobs_count = ActiveStorage::Blob.count
       attachments_count = ActiveStorage::Attachment.count
       variant_records_count = defined?(ActiveStorage::VariantRecord) ? ActiveStorage::VariantRecord.count : 0
-      # deletable_blobs_count = ActiveStorage::Blob.unattached.where('active_storage_blobs.created_at < ?', 12.hours.ago).count
-      deletable_blobs_count = ActiveStorage::Blob.joins("LEFT JOIN active_storage_attachments ON active_storage_attachments.blob_id = active_storage_blobs.id")
-                                                 .where("active_storage_attachments.blob_id IS NULL")
-                                                 .where("active_storage_blobs.created_at < ?", 12.hours.ago).count
+      deletable_blobs_count = deletable_blobs_count_loader
       total_storage = ActiveStorage::Blob.sum(:byte_size)
       avg_storage = blobs_count.positive? ? total_storage / blobs_count : 0
       content_types = ActiveStorage::Blob.group(:content_type).count.sort_by { |_, count| -count }.first(5)
@@ -61,6 +58,14 @@ module LatoStorage
         content_types: content_types,
         largest_blobs: largest_blobs
       }
+    end
+
+    def deletable_blobs_count_loader
+      count = 0
+      ActiveStorage::Blob.left_joins(:attachments).where(active_storage_attachments: { blob_id: nil }).where('active_storage_blobs.created_at < ?', 12.hours.ago).find_each(batch_size: 1000) do |blob|
+        count += 1
+      end
+      count
     end
   end
 end
