@@ -6,4 +6,5 @@ Lato.configure do |config|
 end
 
 LatoStorage.configure do |config|
+  config.optimize_performances = true
 end

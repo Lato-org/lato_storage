@@ -114,36 +114,38 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h5 class="card-title mb-0">
-          <%= I18n.t('lato_storage.largest_blobs') %>
-        </h5>
-      </div>
-      <div class="card-body">
-        <% if @data[:largest_blobs].any? %>
-          <div class="list-group list-group-flush">
-            <% @data[:largest_blobs].each do |blob| %>
-              <a class="list-group-item list-group-item-action" href="<%= blob[:url] %>" target="_blank" rel="noopener noreferrer" download>
-                <div class="d-flex justify-content-between align-items-center">
-                  <strong class="text-truncate"><%= blob[:filename] %></strong>
-                  <div class="d-flex align-items-center ms-3">
-                    <span class="badge bg-primary rounded-pill">
-                      <%= format_bytes blob[:byte_size] %>
-                    </span>
-                    <i class="bi bi-download ms-2"></i>
+    <% unless LatoStorage.config.optimize_performances %>
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <%= I18n.t('lato_storage.largest_blobs') %>
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if @data[:largest_blobs].any? %>
+            <div class="list-group list-group-flush">
+              <% @data[:largest_blobs].each do |blob| %>
+                <a class="list-group-item list-group-item-action" href="<%= blob[:url] %>" target="_blank" rel="noopener noreferrer" download>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <strong class="text-truncate"><%= blob[:filename] %></strong>
+                    <div class="d-flex align-items-center ms-3">
+                      <span class="badge bg-primary rounded-pill">
+                        <%= format_bytes blob[:byte_size] %>
+                      </span>
+                      <i class="bi bi-download ms-2"></i>
+                    </div>
                   </div>
-                </div>
-              </a>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="alert alert-info mb-0">
-            <%= I18n.t('lato_storage.no_largest_blobs') %>
-          </div>
-        <% end %>
+                </a>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="alert alert-info mb-0">
+              <%= I18n.t('lato_storage.no_largest_blobs') %>
+            </div>
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 
 </div>

@@ -17,4 +17,4 @@ it:
     blobs: "Blob"
     attachments: "Allegati"
     variant_records: "Varianti"
-    optimize_performances_active: "I dati visualizzati sono cachati per ottimizzare le prestazioni. I valori mostrati non sono quindi aggiornati in tempo reale e potrebbero non riflettere le modifiche più recenti."
+    optimize_performances_active: "I dati visualizzati sono cachati per ottimizzare le prestazioni. I valori mostrati non sono quindi aggiornati in tempo reale e calcolati con un metodo di stima che può differire dai valori effettivi."
