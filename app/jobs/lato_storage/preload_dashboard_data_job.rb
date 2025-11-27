@@ -100,6 +100,10 @@ module LatoStorage
       else
         ActiveStorage::Blob.count
       end
+    rescue StandardError => e
+      Rails.logger.error "Error estimating blobs count: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      0
     end
 
     def attachments_count_loader
@@ -112,6 +116,10 @@ module LatoStorage
       else
         ActiveStorage::Attachment.count
       end
+    rescue StandardError => e
+      Rails.logger.error "Error estimating attachments count: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      0
     end
 
     def variant_records_count_loader
@@ -126,6 +134,10 @@ module LatoStorage
       else
         ActiveStorage::VariantRecord.count
       end
+    rescue StandardError => e
+      Rails.logger.error "Error estimating variant records count: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      0
     end
 
     def deletable_blobs_count_loader
@@ -134,15 +146,19 @@ module LatoStorage
         count += 1
       end
       count
+    rescue StandardError => e
+      Rails.logger.error "Error estimating deletable blobs count: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      0
     end
 
     # Estimate the total storage by multiplying average size of a group sample by total blobs count
     def total_storage_loader(blobs_count)
-      sample_size = 1000
+      sample_size = 5000
       total_size = 0
       sampled_count = 0
 
-      ActiveStorage::Blob.order('RANDOM()').limit(sample_size).each do |blob|
+      ActiveStorage::Blob.order(id: :desc).limit(sample_size).each do |blob|
         total_size += blob.byte_size
         sampled_count += 1
       end
@@ -151,6 +167,10 @@ module LatoStorage
 
       average_size = total_size / sampled_count
       average_size * blobs_count
+    rescue StandardError => e
+      Rails.logger.error "Error estimating total storage: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      0
     end
 
     # Estimate content types by sampling blobs
@@ -159,7 +179,7 @@ module LatoStorage
       sample_size = 5000
       sampled_count = 0
 
-      ActiveStorage::Blob.order('RANDOM()').limit(sample_size).each do |blob|
+      ActiveStorage::Blob.order(id: :desc).limit(sample_size).each do |blob|
         content_type_counts[blob.content_type] += 1
         sampled_count += 1
       end
@@ -169,6 +189,10 @@ module LatoStorage
       # Scale counts to estimated total blobs count
       content_type_counts.transform_values! { |count| (count.to_f / sampled_count) * blobs_count_loader }
       content_type_counts.sort_by { |_, count| -count }.first(5)
+    rescue StandardError => e
+      Rails.logger.error "Error estimating content types: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      []
     end
   end
 end
