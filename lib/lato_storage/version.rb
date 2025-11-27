@@ -1,3 +1,3 @@
 module LatoStorage
-  VERSION = "3.0.11"
+  VERSION = "3.1.0"
 end
