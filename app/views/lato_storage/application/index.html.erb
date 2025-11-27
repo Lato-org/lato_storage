@@ -59,7 +59,7 @@
         </h5>
       </div>
       <div class="card-body">
-        <% if @data[:content_types].any? %>
+        <% if @data[:content_types]&.any? %>
           <% total = @data[:content_types].sum { |_, count| count } %>
           <ul class="list-group list-group-flush">
             <% @data[:content_types].each do |content_type, count| %>
@@ -122,7 +122,7 @@
           </h5>
         </div>
         <div class="card-body">
-          <% if @data[:largest_blobs].any? %>
+          <% if @data[:largest_blobs]&.any? %>
             <div class="list-group list-group-flush">
               <% @data[:largest_blobs].each do |blob| %>
                 <a class="list-group-item list-group-item-action" href="<%= blob[:url] %>" target="_blank" rel="noopener noreferrer" download>
