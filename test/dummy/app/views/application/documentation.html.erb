@@ -1,8 +1,88 @@
-<%= lato_page_head 'Documentation' %>
+<%= lato_page_head "Documentation" %>
+
+<h2>How to use Lato Storage</h2>
+
+<p>
+  <code>lato_storage</code> adds an Active Storage management section to a Lato admin panel.
+  Use it to monitor uploaded files, inspect storage usage, and run cleanup operations from the back office.
+</p>
+
+<h3>Installation</h3>
+
+<p>Add Lato Storage to the application Gemfile:</p>
+
+<pre><code>gem "lato"
+gem "lato_storage"</code></pre>
+
+<p>Install the engine and run migrations:</p>
+
+<pre><code>bundle
+rails lato_storage:install:application
+rails lato_storage:install:migrations
+rails db:migrate</code></pre>
+
+<p>Mount the engine in <code>config/routes.rb</code>:</p>
+
+<pre><code>Rails.application.routes.draw do
+  mount LatoStorage::Engine =&gt; "/lato-storage"
+
+  # ...
+end</code></pre>
+
+<p>Import styles in <code>app/assets/stylesheets/application.scss</code>:</p>
+
+<pre><code>@import "lato_storage/application";</code></pre>
+
+<p>Import JavaScript in <code>app/javascript/application.js</code>:</p>
+
+<pre><code>import "lato_storage/application"</code></pre>
+
+<h3>Permissions</h3>
+
+<p>
+  Users must be logged into Lato and must have Lato Storage admin permission enabled.
+</p>
+
+<pre><code>user = Lato::User.find_by(email: "admin@example.com")
+user.update!(lato_storage_admin: true)</code></pre>
+
+<h3>What admins can do</h3>
+
+<ul>
+  <li>View an overview of storage usage.</li>
+  <li>Check how many files, attachments, and variants exist.</li>
+  <li>Browse uploaded files and related storage metadata.</li>
+  <li>Identify unattached files that can be cleaned.</li>
+  <li>Start a cleanup operation from the panel.</li>
+</ul>
+
+<h3>Performance configuration</h3>
+
+<p>
+  Large applications can enable performance optimization for the dashboard.
+  When enabled, some dashboard numbers can be estimates instead of exact values.
+</p>
+
+<pre><code>LatoStorage.configure do |config|
+  config.optimize_performances = true
+end</code></pre>
 
 <div class="alert alert-info mt-3">
   <p class="mb-0">
-  No documentation needed for the moment.
+    Keep optimization disabled when exact dashboard numbers are more important than speed.
+    Enable it when storage tables become large and dashboard loading is slow.
   </p>
 </div>
 
+<h3>Cleanup</h3>
+
+<p>
+  The cleaner action runs as a Lato operation, so admins can follow progress and result in the operation page.
+  Use it to remove files that are no longer attached to application records.
+</p>
+
+<div class="alert alert-warning mt-3">
+  <p class="mb-0">
+    Before running cleanup in production, verify backups, storage retention rules, and application-specific file usage.
+  </p>
+</div>
