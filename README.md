@@ -4,6 +4,8 @@ Manage application storage (ActiveStorage data) on Lato projects.
 NOTE: This gem is using [Active Storage Dashboard](https://github.com/giovapanasiti/active_storage_dashboard) as reference for the interface and the functionality. The idea is to provide a similar interface inside Lato.
 
 ## Installation
+
+Requires Rails 8.1.3.1 or newer in the 8.1 series and Lato 3.25.0 or newer. Existing applications must install the new Lato session migration before deployment; previous sessions are invalidated.
 Add required dependencies to your application's Gemfile:
 
 ```ruby
