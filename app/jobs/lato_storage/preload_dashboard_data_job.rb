@@ -3,26 +3,49 @@ module LatoStorage
     SEMAPHORE_CACHE_KEY = 'LatoStorage::PreloadDashboardDataJob/semaphore'
     DATA_CACHE_KEY = 'LatoStorage::PreloadDashboardDataJob/data'
 
+    # Returns always a complete data hash, so the view can render even when data is missing.
+    # Keys `computing` (data not ready yet) and `error` (calculation failed) explain a zeroed dashboard.
     def perform(force_execution = false)
       return load_data_without_optimizations unless LatoStorage.config.optimize_performances
-      
+
       data = Rails.cache.read(DATA_CACHE_KEY)
-      return data || {} if Rails.cache.read(SEMAPHORE_CACHE_KEY)
+      return data || default_data(computing: true) if Rails.cache.read(SEMAPHORE_CACHE_KEY)
 
       if data && !force_execution
         LatoStorage::PreloadDashboardDataJob.perform_later(true)
         return data
       end
 
-      Rails.cache.write(SEMAPHORE_CACHE_KEY, true, expires_in: 30.minutes)
-      data = load_data_with_optimizations
-      Rails.cache.write(DATA_CACHE_KEY, data, expires_in: 12.hours)
-      return data
+      # Atomic lock: only one process computes the data at a time
+      return data || default_data(computing: true) unless Rails.cache.write(SEMAPHORE_CACHE_KEY, true, expires_in: 30.minutes, unless_exist: true)
+
+      begin
+        data = load_data_with_optimizations
+        Rails.cache.write(DATA_CACHE_KEY, data, expires_in: 12.hours)
+        data
+      ensure
+        Rails.cache.delete(SEMAPHORE_CACHE_KEY)
+      end
     rescue StandardError => e
       Rails.logger.error "Error in LatoStorage::PreloadDashboardDataJob: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
-      Rails.cache.delete(SEMAPHORE_CACHE_KEY)
-      nil
+      default_data(error: true)
+    end
+
+    def default_data(computing: false, error: false)
+      {
+        blobs_count: 0,
+        attachments_count: 0,
+        variant_records_count: 0,
+        deletable_blobs_count: 0,
+        total_storage: 0,
+        avg_storage: 0,
+        content_types: [],
+        largest_blobs: [],
+        generated_at: nil,
+        computing: computing,
+        error: error
+      }
     end
 
     private
@@ -49,7 +72,7 @@ module LatoStorage
           content_type: blob.content_type,
           service_name: blob.service_name,
           checksum: blob.checksum,
-          url: Rails.application.routes.url_helpers.rails_blob_url(blob, only_path: true, expires_in: 12.hours)
+          url: Rails.application.routes.url_helpers.rails_blob_path(blob, expires_in: LatoStorage.config.blob_url_expires_in, disposition: 'attachment')
         }
       end
 
@@ -61,7 +84,10 @@ module LatoStorage
         total_storage: total_storage,
         avg_storage: avg_storage,
         content_types: content_types,
-        largest_blobs: largest_blobs
+        largest_blobs: largest_blobs,
+        generated_at: Time.current,
+        computing: false,
+        error: false
       }
     end
 
@@ -76,7 +102,7 @@ module LatoStorage
       deletable_blobs_count = deletable_blobs_count_loader
       total_storage = total_storage_loader(blobs_count)
       avg_storage = blobs_count.positive? ? total_storage / blobs_count : 0
-      content_types = content_types_loader
+      content_types = content_types_loader(blobs_count)
 
       {
         blobs_count: blobs_count,
@@ -86,7 +112,10 @@ module LatoStorage
         total_storage: total_storage,
         avg_storage: avg_storage,
         content_types: content_types,
-        largest_blobs: []
+        largest_blobs: [],
+        generated_at: Time.current,
+        computing: false,
+        error: false
       }
     end
 
@@ -141,11 +170,7 @@ module LatoStorage
     end
 
     def deletable_blobs_count_loader
-      count = 0
-      ActiveStorage::Blob.left_joins(:attachments).where(active_storage_attachments: { blob_id: nil }).where('active_storage_blobs.created_at < ?', 12.hours.ago).find_each(batch_size: 1000) do |blob|
-        count += 1
-      end
-      count
+      ActiveStorage::Blob.left_joins(:attachments).where(active_storage_attachments: { blob_id: nil }).where('active_storage_blobs.created_at < ?', 12.hours.ago).count
     rescue StandardError => e
       Rails.logger.error "Error estimating deletable blobs count: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
@@ -174,7 +199,7 @@ module LatoStorage
     end
 
     # Estimate content types by sampling blobs
-    def content_types_loader
+    def content_types_loader(blobs_count)
       content_type_counts = Hash.new(0)
       sample_size = 5000
       sampled_count = 0
@@ -187,7 +212,7 @@ module LatoStorage
       return [] if sampled_count == 0
 
       # Scale counts to estimated total blobs count
-      content_type_counts.transform_values! { |count| (count.to_f / sampled_count) * blobs_count_loader }
+      content_type_counts.transform_values! { |count| (count.to_f / sampled_count) * blobs_count }
       content_type_counts.sort_by { |_, count| -count }.first(5)
     rescue StandardError => e
       Rails.logger.error "Error estimating content types: #{e.message}"

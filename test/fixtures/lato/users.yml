@@ -9,3 +9,13 @@ user:
   accepted_privacy_policy_version: <%= Lato.config.legal_privacy_policy_version %>
   accepted_terms_and_conditions_version: <%= Lato.config.legal_terms_and_conditions_version %>
   lato_storage_admin: true
+
+user_not_admin:
+  first_name: Paolo
+  last_name: Bonolis
+  email: paolo.bonolis@mail.com
+  email_verified_at: <%= Time.now %>
+  password_digest: <%= BCrypt::Password.create('Password1!') %>
+  accepted_privacy_policy_version: <%= Lato.config.legal_privacy_policy_version %>
+  accepted_terms_and_conditions_version: <%= Lato.config.legal_terms_and_conditions_version %>
+  lato_storage_admin: false

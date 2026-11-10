@@ -1,4 +1,4 @@
-class ApplicationController < LatoStorage::ApplicationController
+class ApplicationController < Lato::ApplicationController
   layout 'lato/application'
   before_action :authenticate_session, except: [:index]
 

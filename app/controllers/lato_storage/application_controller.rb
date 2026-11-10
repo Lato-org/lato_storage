@@ -5,23 +5,15 @@ module LatoStorage
     before_action :authenticate_lato_storage_admin
     before_action { active_sidebar(:lato_storage); active_navbar(:lato_storage) }
 
+    CLEANER_LOCK_CACHE_KEY = 'LatoStorage::ApplicationController/cleaner_lock'
+
     def index
-      # @blobs_count = ActiveStorage::Blob.count
-      # @attachments_count = ActiveStorage::Attachment.count
-      # @variant_records_count = defined?(ActiveStorage::VariantRecord) ? ActiveStorage::VariantRecord.count : 0
-      # @deletable_blobs_count = ActiveStorage::Blob.unattached.where('active_storage_blobs.created_at < ?', 12.hours.ago).count
-      
-      # @total_storage = ActiveStorage::Blob.sum(:byte_size)
-      # @avg_storage = @total_storage / @blobs_count if @blobs_count.positive?
-
-      # @content_types = ActiveStorage::Blob.group(:content_type).count.sort_by { |_, count| -count }.first(5)
-
-      # @largest_blobs = ActiveStorage::Blob.order(byte_size: :desc).limit(3)
-      
       @data = LatoStorage::PreloadDashboardDataJob.perform_now
     end
 
     def cleaner
+      return cleaner_rejected(:cleaner_already_running, :conflict) unless acquire_cleaner_lock
+
       @operation = Lato::Operation.generate('Lato::ActiveStorageCleanerJob', {}, @session.user_id)
 
       respond_to do |format|
@@ -29,7 +21,8 @@ module LatoStorage
           format.html { redirect_to lato.operation_path(@operation) }
           format.json { render json: @operation }
         else
-          format.html { render :index, status: :unprocessable_entity }
+          Rails.cache.delete(CLEANER_LOCK_CACHE_KEY)
+          format.html { redirect_to lato_storage.root_path, alert: I18n.t('lato_storage.cleaner_failed') }
           format.json { render json: @operation.errors, status: :unprocessable_entity }
         end
       end
@@ -40,7 +33,22 @@ module LatoStorage
     def authenticate_lato_storage_admin
       return true if @session.user&.lato_storage_admin
 
-      redirect_to lato.root_path, alert: 'You have not access to this section.'
+      respond_to do |format|
+        format.html { redirect_to lato.root_path, alert: I18n.t('lato_storage.access_denied') }
+        format.json { head :forbidden }
+      end
+    end
+
+    # The operation runs in background and its end is unknown here, so the lock simply expires
+    def acquire_cleaner_lock
+      Rails.cache.write(CLEANER_LOCK_CACHE_KEY, true, expires_in: 10.minutes, unless_exist: true)
+    end
+
+    def cleaner_rejected(message_key, status)
+      respond_to do |format|
+        format.html { redirect_to lato_storage.root_path, alert: I18n.t("lato_storage.#{message_key}") }
+        format.json { render json: { error: I18n.t("lato_storage.#{message_key}") }, status: status }
+      end
     end
   end
 end

@@ -1,15 +1,13 @@
 module LatoStorage
   module ApplicationHelper
-
     def format_bytes(bytes)
-      return '0 B' if bytes.nil? || bytes == 0
-      
-      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-      exponent = (Math.log(bytes) / Math.log(1024)).to_i
-      exponent = [exponent, units.size - 1].min
-      
-      converted = bytes.to_f / (1024 ** exponent)
-      "#{format('%.2f', converted)} #{units[exponent]}"
+      number_to_human_size(bytes.to_i)
+    end
+
+    def format_datetime(time)
+      return '-' if time.nil?
+
+      I18n.l(time, format: I18n.t('lato_storage.datetime_format'))
     end
 
     def active_storage_blob_byte_size(blob)
@@ -17,15 +15,15 @@ module LatoStorage
     end
 
     def active_storage_blob_created_at(blob)
-      blob.created_at.strftime('%Y-%m-%d %H:%M:%S')
+      format_datetime blob.created_at
     end
 
     def active_storage_blob_filename(blob)
-      link_to blob.filename, main_app.url_for(blob), target: '_blank', class: 'text-truncate d-block', style: 'max-width: 250px;'
+      active_storage_blob_link(blob)
     end
 
     def active_storage_attachment_created_at(attachment)
-      attachment.created_at.strftime('%Y-%m-%d %H:%M:%S')
+      format_datetime attachment.created_at
     end
 
     def active_storage_attachment_record_id(attachment)
@@ -33,13 +31,23 @@ module LatoStorage
     end
 
     def active_storage_attachment_blob_id(attachment)
-      return  ' - ' if attachment.blob.nil?
-      link_to attachment.blob.filename, main_app.url_for(attachment.blob), target: '_blank', class: 'text-truncate d-block', style: 'max-width: 250px;'
+      active_storage_blob_link(attachment.blob)
     end
 
     def active_storage_variant_record_blob_id(variant_record)
-      return  ' - ' if variant_record.blob.nil?
-      link_to variant_record.blob.filename, main_app.url_for(variant_record.blob), target: '_blank', class: 'text-truncate d-block', style: 'max-width: 250px;'
+      active_storage_blob_link(variant_record.blob)
+    end
+
+    private
+
+    # Expiring link, forced as download, so a file uploaded by someone else is never rendered inline on the admin origin.
+    def active_storage_blob_link(blob)
+      return ' - ' if blob.nil?
+
+      url = main_app.rails_blob_path(blob, expires_in: LatoStorage.config.blob_url_expires_in, disposition: 'attachment')
+      link_to url, target: '_blank', rel: 'noopener noreferrer', title: blob.filename.to_s, class: 'text-truncate d-block', style: 'max-width: 250px;' do
+        safe_join([blob.filename.to_s, tag.span(I18n.t('lato_storage.new_tab'), class: 'visually-hidden')], ' ')
+      end
     end
   end
 end

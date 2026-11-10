@@ -6,13 +6,23 @@
   </div>
 <% end %>
 
+<% if @data[:error] %>
+  <div class="alert alert-danger mb-3" role="alert"><%= I18n.t('lato_storage.computing_error') %></div>
+<% elsif @data[:computing] %>
+  <div class="alert alert-warning mb-3" role="status"><%= I18n.t('lato_storage.computing') %></div>
+<% end %>
+
+<% if @data[:generated_at] %>
+  <p class="text-muted small"><%= I18n.t('lato_storage.generated_at', time: format_datetime(@data[:generated_at])) %></p>
+<% end %>
+
 <div class="row">
   <div class="col col-6 col-lg-3 mb-3">
     <div class="card">
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @data[:blobs_count] %></div>
         <div><%= I18n.t('lato_storage.total_blobs') %></div>
-        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.blobs_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_blob', action_size: 'xl', action_title: I18n.t('lato_storage.blobs') } %>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.blobs_path, class: 'btn btn-primary btn-sm mt-3', aria: { label: I18n.t('lato_storage.see_all_aria', name: I18n.t('lato_storage.blobs')) }, data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_blob', action_size: 'xl', action_title: I18n.t('lato_storage.blobs') } %>
       </div>
     </div>
   </div>
@@ -22,7 +32,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @data[:attachments_count] %></div>
         <div><%= I18n.t('lato_storage.total_attachments') %></div>
-        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.attachments_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_attachment', action_size: 'xl', action_title: I18n.t('lato_storage.attachments') } %>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.attachments_path, class: 'btn btn-primary btn-sm mt-3', aria: { label: I18n.t('lato_storage.see_all_aria', name: I18n.t('lato_storage.attachments')) }, data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_attachment', action_size: 'xl', action_title: I18n.t('lato_storage.attachments') } %>
       </div>
     </div>
   </div>
@@ -32,7 +42,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @data[:variant_records_count] %></div>
         <div><%= I18n.t('lato_storage.total_variant_records') %></div>
-        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.variant_records_path, class: 'btn btn-primary btn-sm mt-3', data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_variant_record', action_size: 'xl', action_title: I18n.t('lato_storage.variant_records') } %>
+        <%= link_to I18n.t('lato_storage.cta_see_all'), lato_storage.variant_records_path, class: 'btn btn-primary btn-sm mt-3', aria: { label: I18n.t('lato_storage.see_all_aria', name: I18n.t('lato_storage.variant_records')) }, data: { lato_action_target: 'trigger', turbo_frame: 'lato_index_default_active_storage_variant_record', action_size: 'xl', action_title: I18n.t('lato_storage.variant_records') } %>
       </div>
     </div>
   </div>
@@ -42,7 +52,7 @@
       <div class="card-body text-center">
         <div class="fw-bold fs-2"><%= @data[:deletable_blobs_count] %></div>
         <div><%= I18n.t('lato_storage.deletable_blobs') %></div>
-        <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary btn-sm mt-3', data: { turbo_method: :post, lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
+        <%= link_to I18n.t('lato_storage.cta_free_space'), lato_storage.cleaner_path, class: 'btn btn-primary btn-sm mt-3', data: { turbo_method: :post, turbo_confirm: I18n.t('lato_storage.cleaner_confirm', count: @data[:deletable_blobs_count]), lato_action_target: 'trigger', turbo_frame: 'lato_operation' } %>
       </div>
     </div>
   </div>
@@ -67,12 +77,13 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <strong><%= content_type %></strong>
                   <span class="badge bg-primary rounded-pill">
-                    <%= count %> files
+                    <%= I18n.t('lato_storage.files', count: count.round) %>
                   </span>
                 </div>
 
                 <div class="progress mt-2">
-                  <div class="progress-bar" role="progressbar" style="width: <%= (count.to_f / total * 100).round(2) %>%" aria-valuenow="<%= count %>" aria-valuemin="0" aria-valuemax="<%= total %>"></div>
+                  <% percentage = total.positive? ? (count.to_f / total * 100).round : 0 %>
+                  <div class="progress-bar" role="progressbar" style="width: <%= percentage %>%" aria-label="<%= content_type %>" aria-valuenow="<%= percentage %>" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
               </li>
             <% end %>
@@ -126,13 +137,14 @@
             <div class="list-group list-group-flush">
               <% @data[:largest_blobs].each do |blob| %>
                 <a class="list-group-item list-group-item-action" href="<%= blob[:url] %>" target="_blank" rel="noopener noreferrer" download>
+                  <span class="visually-hidden"><%= I18n.t('lato_storage.download_aria', filename: blob[:filename]) %> <%= I18n.t('lato_storage.new_tab') %></span>
                   <div class="d-flex justify-content-between align-items-center">
                     <strong class="text-truncate"><%= blob[:filename] %></strong>
                     <div class="d-flex align-items-center ms-3">
                       <span class="badge bg-primary rounded-pill">
                         <%= format_bytes blob[:byte_size] %>
                       </span>
-                      <i class="bi bi-download ms-2"></i>
+                      <i class="bi bi-download ms-2" aria-hidden="true"></i>
                     </div>
                   </div>
                 </a>

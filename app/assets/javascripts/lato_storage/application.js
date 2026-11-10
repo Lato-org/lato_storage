@@ -1,1 +1,1 @@
-console.log("Lato Settings JS loaded");
+// Lato Storage JS (no behaviors yet)
