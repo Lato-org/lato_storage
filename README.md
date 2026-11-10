@@ -5,7 +5,7 @@ NOTE: This gem is using [Active Storage Dashboard](https://github.com/giovapanas
 
 ## Installation
 
-Requires Rails 8.1.3.1 or newer in the 8.1 series, Lato 3.25.0 or newer and Active Storage installed on the host application (`rails active_storage:install`). Applications using variants with vips require libvips 8.13 or newer. Existing applications must install the new Lato session migration before deployment; previous sessions are invalidated.
+Requires Rails 8.1.3.1 or newer in the 8.1 series, Lato 3.25.0 or newer and Active Storage installed on the host application (`rails active_storage:install`). Applications using variants with vips require libvips 8.13 or newer.
 Add required dependencies to your application's Gemfile:
 
 ```ruby
@@ -126,6 +126,16 @@ Headless run: `Lato::Operation.generate("Lato::ActiveStorageCleanerJob", {}, use
 ## Security notes
 
 Keep the Rails defaults for `config.active_storage.content_types_to_serve_as_binary` and `content_types_allowed_inline`: if HTML or SVG files uploaded by users were served inline, opening a link from the list would run them on the admin origin.
+
+## Upgrading
+
+```bash
+bundle update lato_storage
+rails lato_storage:install:migrations
+rails db:migrate
+```
+
+Read [UPGRADING.md](UPGRADING.md) for the changes and extra steps required by each version.
 
 ## Development
 
